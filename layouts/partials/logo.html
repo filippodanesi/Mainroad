@@ -15,8 +15,10 @@
 			{{- end -}}
 			{{ with $logoTitle -}}
 				<div class="logo__item logo__text">
-					<div class="logo__title">{{ . }}</div>
-					{{ with $logoSubtitle }}<div class="logo__tagline">{{ . }}</div>{{ end }}
+					<div class="logo__title">
+						<h1>{{ . }}</h1>
+					</div>
+					{{ with $logoSubtitle }}<div class="logo__tagline"><h2>{{ . }}</h2></div>{{ end }}
 				</div>
 			{{- end }}
 		</a>

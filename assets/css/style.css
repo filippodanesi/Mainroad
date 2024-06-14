@@ -1323,3 +1323,43 @@ textarea {
 		font-size: .6875rem;
 	}
 }
+
+
+/* Custom CSS */
+
+.footer__content {
+	display: flex;
+	justify-content: space-between;
+	width: 100%;
+	flex-wrap: wrap; /* This ensures content wraps on smaller screens */
+}
+
+.footer__social-links {
+	margin-left: auto;
+}
+
+@media (max-width: 768px) {
+	.footer__content {
+		flex-direction: column;
+		text-align: center; /* Center-align text on smaller screens */
+	}
+
+	.footer__social-links {
+		margin-left: 0; /* Reset margin on smaller screens */
+		margin-top: 10px; /* Add some space above social links */
+	}
+}
+
+.logo__title h1 {
+	/* Rimuovi qualsiasi stile qui se vuoi che l'h1 non abbia stili specifici */
+	margin: 0;
+	font-size: inherit; /* Eredita la dimensione del font dal div */
+	color: inherit; /* Eredita il colore dal div */
+}
+
+.logo__tagline h2 {
+	/* Rimuovi qualsiasi stile qui se vuoi che l'h2 non abbia stili specifici */
+	margin: 0;
+	font-size: inherit; /* Eredita la dimensione del font dal div */
+	color: inherit; /* Eredita il colore dal div */
+}
