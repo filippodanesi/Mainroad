@@ -39,17 +39,18 @@
 	{{ if isset .Params "date" }}<meta property="article:published_time" content="{{ time .Date }}" />{{ end }}
 
 	{{ if .IsHome }}
+	{{ if .IsHome }}
 	<script type="application/ld+json">
 	{
-	"@context": "http://schema.org",
-	"@type": "WebSite",
-	"url": "{{ .Permalink }}",
-	"name": "{{ .Site.Title }}",
-	"author": {
+	  "@context": "http://schema.org",
+	  "@type": "WebSite",
+	  "url": "{{ .Permalink }}",
+	  "name": "{{ .Site.Title }}",
+	  "author": {
 		"@type": "Person",
 		"name": "{{ .Site.Params.author }}"
-	},
-	"description": "{{ .Site.Params.description }}"
+	  },
+	  "description": "{{ .Site.Params.description }}"
 	}
 	</script>
 	{{ end }}
@@ -58,29 +59,29 @@
 	<script type="application/ld+json">
 	{{ if eq .Section "post" }}
 	{
-	"@context": "http://schema.org",
-	"@type": "BlogPosting",
-	"headline": "{{ .Title }}",
-	"genre": "{{ range $index, $element := .Params.categories }}{{ if $index }}, {{ end }}{{ $element }}{{ end }}",
-	"url": "{{ .Permalink }}",
-	"datePublished": "{{ time .Date }}",
-	"description": "{{ .Description }}",
-	"author": {
+	  "@context": "http://schema.org",
+	  "@type": "BlogPosting",
+	  "headline": "{{ .Title | safeJS }}",
+	  "genre": "{{ range $index, $element := .Params.categories }}{{ if $index }}, {{ end }}{{ $element | safeJS }}{{ end }}",
+	  "url": "{{ .Permalink | safeJS }}",
+	  "datePublished": "{{ time .Date | safeJS }}",
+	  "description": "{{ .Description | safeJS }}",
+	  "author": {
 		"@type": "Person",
-		"name": "{{ .Site.Params.author }}"
-	}
+		"name": "{{ .Site.Params.author | safeJS }}"
+	  }
 	}
 	{{ else }}
 	{
-	"@context": "http://schema.org",
-	"@type": "AboutPage",
-	"url": "{{ .Permalink }}",
-	"name": "{{ .Title }}",
-	"author": {
+	  "@context": "http://schema.org",
+	  "@type": "AboutPage",
+	  "url": "{{ .Permalink | safeJS }}",
+	  "name": "{{ .Title | safeJS }}",
+	  "author": {
 		"@type": "Person",
-		"name": "{{ .Site.Params.author }}"
-	},
-	"description": "{{ .Site.Params.description }}"
+		"name": "{{ .Site.Params.author | safeJS }}"
+	  },
+	  "description": "{{ .Site.Params.description | safeJS }}"
 	}
 	{{ end }}
 	</script>
