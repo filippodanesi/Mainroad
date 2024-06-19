@@ -22,8 +22,9 @@
     fetch('/index.json')
       .then(response => response.json())
       .then(data => {
-        console.log('Index data:', data);
+        console.log('Index data:', data); // Debugging
         lunrData = data;
+
         lunrIndex = lunr(function () {
           this.ref('id');
           this.field('title');
@@ -47,29 +48,32 @@
       });
 
     window.searchSite = function(query) {
-      console.log('searchSite function called');
       if (!query) {
         query = document.getElementById('search-field').value;
       }
-      console.log('Search query:', query);
-      const results = lunrIndex.search(query);
-      console.log('Search results:', results);
-      const resultsContainer = document.getElementById('search-results');
+      console.log('Search query:', query); // Debugging
+      if (lunrIndex) {
+        const results = lunrIndex.search(query);
+        console.log('Search results:', results); // Debugging
+        const resultsContainer = document.getElementById('search-results');
 
-      resultsContainer.innerHTML = '';
+        resultsContainer.innerHTML = '';
 
-      if (results.length > 0) {
-        results.forEach(function(result) {
-          const item = lunrData.find(d => d.id === result.ref);
-          console.log('Item found:', item);
-          if (item) {
-            const element = document.createElement('div');
-            element.innerHTML = `<h2><a href="${item.url}">${item.title}</a></h2><p>${item.content.substring(0, 150)}...</p>`;
-            resultsContainer.appendChild(element);
-          }
-        });
+        if (results.length > 0) {
+          results.forEach(function(result) {
+            const item = lunrData.find(d => d.id === result.ref);
+            console.log('Item found:', item); // Debugging
+            if (item) {
+              const element = document.createElement('div');
+              element.innerHTML = `<h2><a href="${item.url}">${item.title}</a></h2><p>${item.content.substring(0, 150)}...</p>`;
+              resultsContainer.appendChild(element);
+            }
+          });
+        } else {
+          resultsContainer.innerHTML = '<p>No results found</p>';
+        }
       } else {
-        resultsContainer.innerHTML = '<p>No results found</p>';
+        console.error('Lunr index not initialized'); // Debugging
       }
       return false;
     };
