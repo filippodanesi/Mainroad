@@ -67,7 +67,7 @@
         "description": {{ .Description | jsonify }},
         "author": {
           "@type": "Person",
-          "name": {{ .Site.Params.author | jsonify }}
+          "name": {{ .Site.Author.name | jsonify }}
         }
       }
       {{ else }}
@@ -78,7 +78,7 @@
         "name": {{ .Title | jsonify }},
         "author": {
           "@type": "Person",
-          "name": {{ .Site.Params.author | jsonify }}
+          "name": {{ .Site.Author.name | jsonify }}
         },
         "description": {{ .Site.Params.description | jsonify }}
       }
