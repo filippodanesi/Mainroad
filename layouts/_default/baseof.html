@@ -47,7 +47,7 @@
       "name": "{{ .Site.Title }}",
       "author": {
         "@type": "Person",
-        "name": "{{ .Site.Params.author }}"
+        "name": {{ .Site.Author.name }}
       },
       "description": "{{ .Site.Params.description }}"
     }
@@ -60,7 +60,7 @@
       {
         "@context": "http://schema.org",
         "@type": "BlogPosting",
-        "headline": {{ .Title | jsonify }},
+        "headline": {{ .Title }},
         "genre": {{ .Params.categories | jsonify }},
         "url": {{ .Permalink | jsonify }},
         "datePublished": {{ time .Date | jsonify }},
