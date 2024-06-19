@@ -60,27 +60,27 @@
       {
         "@context": "http://schema.org",
         "@type": "BlogPosting",
-        "headline": "{{ .Title | safeJS }}",
-        "genre": "{{ range $index, $element := .Params.categories }}{{ if $index }}, {{ end }}{{ $element | safeJS }}{{ end }}",
-        "url": "{{ .Permalink | safeJS }}",
-        "datePublished": "{{ time .Date | safeJS }}",
-        "description": "{{ .Description | safeJS }}",
+        "headline": {{ .Title | jsonify }},
+        "genre": {{ .Params.categories | jsonify }},
+        "url": {{ .Permalink | jsonify }},
+        "datePublished": {{ time .Date | jsonify }},
+        "description": {{ .Description | jsonify }},
         "author": {
           "@type": "Person",
-          "name": "{{ .Site.Params.author | safeJS }}"
+          "name": {{ .Site.Params.author | jsonify }}
         }
       }
       {{ else }}
       {
         "@context": "http://schema.org",
         "@type": "AboutPage",
-        "url": "{{ .Permalink | safeJS }}",
-        "name": "{{ .Title | safeJS }}",
+        "url": {{ .Permalink | jsonify }},
+        "name": {{ .Title | jsonify }},
         "author": {
           "@type": "Person",
-          "name": "{{ .Site.Params.author | safeJS }}"
+          "name": {{ .Site.Params.author | jsonify }}
         },
-        "description": "{{ .Site.Params.description | safeJS }}"
+        "description": {{ .Site.Params.description | jsonify }}
       }
       {{ end }}
     </script>
