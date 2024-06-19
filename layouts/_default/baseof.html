@@ -1,132 +1,131 @@
 <!DOCTYPE html>
 <html class="no-js" lang="{{ .Site.Language.Lang }}">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>{{ block "title" . }}{{ if not .IsHome }}{{ .Title }} — {{ end }}{{ .Site.Title }}{{ end }}</title>
-	<script>(function(d,e){d[e]=d[e].replace("no-js","js");})(document.documentElement,"className");</script>
-	<meta name="description" content="{{ if .IsHome }}{{ .Site.Params.description }}{{ else }}{{ .Description }}{{ end }}"/>
-	<meta name="robots" content="noodp"/>
-	<link rel="canonical" href="{{ .Permalink }}" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ block "title" . }}{{ if not .IsHome }}{{ .Title }} — {{ end }}{{ .Site.Title }}{{ end }}</title>
+    <script>(function(d,e){d[e]=d[e].replace("no-js","js");})(document.documentElement,"className");</script>
+    <meta name="description" content="{{ if .IsHome }}{{ .Site.Params.description }}{{ else }}{{ .Description }}{{ end }}"/>
+    <meta name="robots" content="noodp"/>
+    <link rel="canonical" href="{{ .Permalink }}" />
 
-	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:description" content="{{ if .IsHome }}{{ .Site.Params.description }}{{ else }}{{ .Description }}{{ end }}" />
-	<meta name="twitter:title" content="{{ .Title }}{{ if .IsHome }} — {{ .Site.Params.Tagline }}{{ else }} — {{ .Site.Title }}{{ end }}" />
-	<meta name="twitter:site" content="{{ .Site.Params.twitter }}" />
-	<meta name="twitter:creator" content="{{ .Site.Params.twitter }}" />
-	{{ if .Params.thumbnail }}
-	<meta name="twitter:image" content="{{ .Params.thumbnail | absURL }}" />
-	{{ else if .IsHome }}
-	<meta name="twitter:image" content="{{ "3f1fe209-0848-47df-9717-0c2bcd60c7b4.png" | absURL }}" />
-	{{ else }}
-	<meta name="twitter:image" content="{{ "3f1fe209-0848-47df-9717-0c2bcd60c7b4.png" | absURL }}" />
-	{{ end }}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:description" content="{{ if .IsHome }}{{ .Site.Params.description }}{{ else }}{{ .Description }}{{ end }}" />
+    <meta name="twitter:title" content="{{ .Title }}{{ if .IsHome }} — {{ .Site.Params.Tagline }}{{ else }} — {{ .Site.Title }}{{ end }}" />
+    <meta name="twitter:site" content="{{ .Site.Params.twitter }}" />
+    <meta name="twitter:creator" content="{{ .Site.Params.twitter }}" />
+    {{ if .Params.thumbnail }}
+    <meta name="twitter:image" content="{{ .Params.thumbnail | absURL }}" />
+    {{ else if .IsHome }}
+    <meta name="twitter:image" content="{{ "3f1fe209-0848-47df-9717-0c2bcd60c7b4.png" | absURL }}" />
+    {{ else }}
+    <meta name="twitter:image" content="{{ "3f1fe209-0848-47df-9717-0c2bcd60c7b4.png" | absURL }}" />
+    {{ end }}
 
-	<meta property="og:locale" content="en_US" />
-	<meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}" />
-	<meta content="{{ .Title }}{{ if .IsHome }} — {{ .Site.Params.Tagline }}{{ else }} — {{ .Site.Title }}{{ end }}" property="og:title">
-	<meta content="{{ if .IsHome }}{{ .Site.Params.description }}{{ else }}{{ .Description }}{{ end }}" property="og:description">
-	<meta property="og:url" content="{{ .Permalink }}" />
-	<meta property="og:site_name" content="{{ .Site.Title }}" />
-	{{ if .Params.thumbnail }}
-	<meta property="og:image" content="{{ .Params.thumbnail | absURL }}" />
-	{{ else if .IsHome }}
-	<meta property="og:image" content="static/img/3f1fe209-0848-47df-9717-0c2bcd60c7b4.png">
-	{{ else }}
-	<meta property="og:image" content="{{ "img/3f1fe209-0848-47df-9717-0c2bcd60c7b4.png" | absURL }}" />
-	{{ end }}
-	{{ range .Params.categories }}<meta property="article:section" content="{{ . }}" />{{ end }}
-	{{ if isset .Params "date" }}<meta property="article:published_time" content="{{ time .Date }}" />{{ end }}
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}" />
+    <meta content="{{ .Title }}{{ if .IsHome }} — {{ .Site.Params.Tagline }}{{ else }} — {{ .Site.Title }}{{ end }}" property="og:title">
+    <meta content="{{ if .IsHome }}{{ .Site.Params.description }}{{ else }}{{ .Description }}{{ end }}" property="og:description">
+    <meta property="og:url" content="{{ .Permalink }}" />
+    <meta property="og:site_name" content="{{ .Site.Title }}" />
+    {{ if .Params.thumbnail }}
+    <meta property="og:image" content="{{ .Params.thumbnail | absURL }}" />
+    {{ else if .IsHome }}
+    <meta property="og:image" content="static/img/3f1fe209-0848-47df-9717-0c2bcd60c7b4.png">
+    {{ else }}
+    <meta property="og:image" content="{{ "img/3f1fe209-0848-47df-9717-0c2bcd60c7b4.png" | absURL }}" />
+    {{ end }}
+    {{ range .Params.categories }}<meta property="article:section" content="{{ . }}" />{{ end }}
+    {{ if isset .Params "date" }}<meta property="article:published_time" content="{{ time .Date }}" />{{ end }}
 
-	{{ if .IsHome }}
-	<script type="application/ld+json">
-	{
-	  "@context": "http://schema.org",
-	  "@type": "WebSite",
-	  "url": "{{ .Permalink }}",
-	  "name": "{{ .Site.Title }}",
-	  "author": {
-		"@type": "Person",
-		"name": "{{ .Site.Params.author }}"
-	  },
-	  "description": "{{ .Site.Params.description }}"
-	}
-	</script>
-	{{ end }}
+    {{ if .IsHome }}
+    <script type="application/ld+json">
+    {
+      "@context": "http://schema.org",
+      "@type": "WebSite",
+      "url": "{{ .Permalink }}",
+      "name": "{{ .Site.Title }}",
+      "author": {
+        "@type": "Person",
+        "name": "{{ .Site.Params.author }}"
+      },
+      "description": "{{ .Site.Params.description }}"
+    }
+    </script>
+    {{ end }}
 
-	{{ if .IsPage }}
-	<script type="application/ld+json">
-	  {{ if eq .Section "post" }}
-	  {
-		"@context": "http://schema.org",
-		"@type": "BlogPosting",
-		"headline": "{{ .Title | safeJS }}",
-		"genre": "{{ range $index, $element := .Params.categories }}{{ if $index }}, {{ end }}{{ $element | safeJS }}{{ end }}",
-		"url": "{{ .Permalink | safeJS }}",
-		"datePublished": "{{ time .Date | safeJS }}",
-		"description": "{{ .Description | safeJS }}",
-		"author": {
-		  "@type": "Person",
-		  "name": "{{ .Site.Params.author | safeJS }}"
-		}
-	  }
-	  {{ else }}
-	  {
-		"@context": "http://schema.org",
-		"@type": "AboutPage",
-		"url": "{{ .Permalink | safeJS }}",
-		"name": "{{ .Title | safeJS }}",
-		"author": {
-		  "@type": "Person",
-		  "name": "{{ .Site.Params.author | safeJS }}"
-		},
-		"description": "{{ .Site.Params.description | safeJS }}"
-	  }
-	  {{ end }}
-	</script>
-	{{ end }}
+    {{ if .IsPage }}
+    <script type="application/ld+json">
+      {{ if eq .Section "post" }}
+      {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "{{ .Title | safeJS }}",
+        "genre": "{{ range $index, $element := .Params.categories }}{{ if $index }}, {{ end }}{{ $element | safeJS }}{{ end }}",
+        "url": "{{ .Permalink | safeJS }}",
+        "datePublished": "{{ time .Date | safeJS }}",
+        "description": "{{ .Description | safeJS }}",
+        "author": {
+          "@type": "Person",
+          "name": "{{ .Site.Params.author | safeJS }}"
+        }
+      }
+      {{ else }}
+      {
+        "@context": "http://schema.org",
+        "@type": "AboutPage",
+        "url": "{{ .Permalink | safeJS }}",
+        "name": "{{ .Title | safeJS }}",
+        "author": {
+          "@type": "Person",
+          "name": "{{ .Site.Params.author | safeJS }}"
+        },
+        "description": "{{ .Site.Params.description | safeJS }}"
+      }
+      {{ end }}
+    </script>
+    {{ end }}
 
+    {{- $googleFontsLink := .Site.Params.googleFontsLink | default "https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700" }}
+    {{- if hasPrefix $googleFontsLink "https://fonts.googleapis.com/" }}
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+    <link rel="dns-prefetch" href="//fonts.gstatic.com">
+    <link rel="stylesheet" {{ printf `href="%s"` $googleFontsLink | safeHTMLAttr }}>
+    {{- end }}
 
-	{{- $googleFontsLink := .Site.Params.googleFontsLink | default "https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700" }}
-	{{- if hasPrefix $googleFontsLink "https://fonts.googleapis.com/" }}
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link rel="dns-prefetch" href="//fonts.googleapis.com">
-	<link rel="dns-prefetch" href="//fonts.gstatic.com">
-	<link rel="stylesheet" {{ printf `href="%s"` $googleFontsLink | safeHTMLAttr }}>
-	{{- end }}
+    {{ $style := resources.Get "css/style.css" | resources.ExecuteAsTemplate "css/style.css" . -}}
+    <link rel="stylesheet" href="{{ $style.RelPermalink }}">
+    {{ range .Site.Params.customCSS -}}
+    <link rel="stylesheet" href="{{ . | relURL }}">
+    {{- end }}
 
-	{{ $style := resources.Get "css/style.css" | resources.ExecuteAsTemplate "css/style.css" . -}}
-	<link rel="stylesheet" href="{{ $style.RelPermalink }}">
-	{{ range .Site.Params.customCSS -}}
-	<link rel="stylesheet" href="{{ . | relURL }}">
-	{{- end }}
+    {{- with .OutputFormats.Get "rss" }}
+    {{ printf `<link rel="%s" type="%s" href="%s" title="%s">` .Rel .MediaType.Type .RelPermalink $.Site.Title | safeHTML }}
+    {{- end }}
 
-	{{- with .OutputFormats.Get "rss" }}
-	{{ printf `<link rel="%s" type="%s" href="%s" title="%s">` .Rel .MediaType.Type .RelPermalink $.Site.Title | safeHTML }}
-	{{- end }}
-
-	<link rel="shortcut icon" href="{{ "favicon.ico" | relURL }}">
-	{{- if not .Site.IsServer }}
-		{{ template "_internal/google_analytics.html" . }}
-	{{- end }}
+    <link rel="shortcut icon" href="{{ "favicon.ico" | relURL }}">
+    {{- if not .Site.IsServer }}
+        {{ template "_internal/google_analytics.html" . }}
+    {{- end }}
 </head>
 <body class="body">
-	<div class="container container--outer">
-		{{ block "header" . }}{{ partial "header.html" . }}{{ end }}
-		<div class="wrapper flex">
-			<div class="primary">
-			{{ block "main" . }}
-				{{ with .Content }}
-				<div class="content main__content clearfix">
-					{{ . }}
-				</div>
-				{{ end }}
-			{{ end }}
-			</div>
-			{{ block "sidebar" . }}{{ partial "sidebar.html" . }}{{ end }}
-		</div>
-		{{ block "footer" . }}{{ partial "footer.html" . }}{{ end }}
-	</div>
+    <div class="container container--outer">
+        {{ block "header" . }}{{ partial "header.html" . }}{{ end }}
+        <div class="wrapper flex">
+            <div class="primary">
+            {{ block "main" . }}
+                {{ with .Content }}
+                <div class="content main__content clearfix">
+                    {{ . }}
+                </div>
+                {{ end }}
+            {{ end }}
+            </div>
+            {{ block "sidebar" . }}{{ partial "sidebar.html" . }}{{ end }}
+        </div>
+        {{ block "footer" . }}{{ partial "footer.html" . }}{{ end }}
+    </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lunr.js/2.3.9/lunr.min.js"></script>
 <script src="/index.json"></script>
 <script async defer src="{{ "js/menu.js" | relURL }}"></script>
@@ -135,48 +134,48 @@
 {{- end }}
 {{- partial "mathjax.html" . -}}
 <script>
-	document.addEventListener('DOMContentLoaded', function() {
-	  let lunrIndex;
-	  let lunrData;
+    document.addEventListener('DOMContentLoaded', function() {
+      let lunrIndex;
+      let lunrData;
 
-	  fetch('/index.json')
-		.then(response => response.json())
-		.then(data => {
-		  console.log('Index data:', data); // Debug: Visualizza i dati dell'indice
-		  lunrData = data;
-		  lunrIndex = lunr(function () {
-			this.ref('id');
-			this.field('title');
-			this.field('content');
+      fetch('/index.json')
+        .then(response => response.json())
+        .then(data => {
+          console.log('Index data:', data); // Debug: Visualizza i dati dell'indice
+          lunrData = data;
+          lunrIndex = lunr(function () {
+            this.ref('id');
+            this.field('title');
+            this.field('content');
 
-			lunrData.forEach(function (doc) {
-			  this.add(doc);
-			}, this);
-		  });
-		});
+            lunrData.forEach(function (doc) {
+              this.add(doc);
+            }, this);
+          });
+        });
 
-	  window.searchSite = function() {
-		const query = document.getElementById('search-field').value;
-		console.log('Search query:', query); // Debug: Visualizza la query di ricerca
-		const results = lunrIndex.search(query);
-		console.log('Search results:', results); // Debug: Visualizza i risultati della ricerca
-		const resultsContainer = document.getElementById('search-results');
+      window.searchSite = function() {
+        const query = document.getElementById('search-field').value;
+        console.log('Search query:', query); // Debug: Visualizza la query di ricerca
+        const results = lunrIndex.search(query);
+        console.log('Search results:', results); // Debug: Visualizza i risultati della ricerca
+        const resultsContainer = document.getElementById('search-results');
 
-		resultsContainer.innerHTML = '';
+        resultsContainer.innerHTML = '';
 
-		if (results.length > 0) {
-		  results.forEach(function(result) {
-			const item = lunrData.find(d => d.id === result.ref);
-			const element = document.createElement('div');
-			element.innerHTML = `<h2><a href="${item.url}">${item.title}</a></h2><p>${item.content.substring(0, 150)}...</p>`;
-			resultsContainer.appendChild(element);
-		  });
-		} else {
-		  resultsContainer.innerHTML = '<p>No results found</p>';
-		}
-		return false;
-	  };
-	});
-	</script>
+        if (results.length > 0) {
+          results.forEach(function(result) {
+            const item = lunrData.find(d => d.id === result.ref);
+            const element = document.createElement('div');
+            element.innerHTML = `<h2><a href="${item.url}">${item.title}</a></h2><p>${item.content.substring(0, 150)}...</p>`;
+            resultsContainer.appendChild(element);
+          });
+        } else {
+          resultsContainer.innerHTML = '<p>No results found</p>';
+        }
+        return false;
+      };
+    });
+</script>
 </body>
 </html>
