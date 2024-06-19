@@ -48,26 +48,27 @@
 	"author": {
 		"@type": "Person",
 		"name": "{{ .Site.Params.author }}"
-		},
+	},
 	"description": "{{ .Site.Params.description }}"
 	}
 	</script>
 	{{ end }}
+
 	{{ if .IsPage }}
 	<script type="application/ld+json">
 	{{ if eq .Section "post" }}
 	{
-		"@context": "http://schema.org",
-		"@type": "BlogPosting",
-		"headline": "{{ .Title }}",
-		"genre": "{{ range $index, $element := .Params.categories }}{{ if $index }}, {{ end }}{{ $element }}{{ end }}",
-		"url": "{{ .Permalink }}",
-		"datePublished": "{{ time .Date }}",
-		"description": "{{ .Description }}",
-		"author": {
-			"@type": "Person",
-			"name": "{{ .Site.Params.author }}"
-		}
+	"@context": "http://schema.org",
+	"@type": "BlogPosting",
+	"headline": "{{ .Title }}",
+	"genre": "{{ range $index, $element := .Params.categories }}{{ if $index }}, {{ end }}{{ $element }}{{ end }}",
+	"url": "{{ .Permalink }}",
+	"datePublished": "{{ time .Date }}",
+	"description": "{{ .Description }}",
+	"author": {
+		"@type": "Person",
+		"name": "{{ .Site.Params.author }}"
+	}
 	}
 	{{ else }}
 	{
@@ -78,12 +79,13 @@
 	"author": {
 		"@type": "Person",
 		"name": "{{ .Site.Params.author }}"
-		},
+	},
 	"description": "{{ .Site.Params.description }}"
 	}
 	{{ end }}
 	</script>
 	{{ end }}
+
 
 	{{- $googleFontsLink := .Site.Params.googleFontsLink | default "https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700" }}
 	{{- if hasPrefix $googleFontsLink "https://fonts.googleapis.com/" }}
