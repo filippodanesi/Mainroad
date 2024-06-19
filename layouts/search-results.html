@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="{{ .Site.LanguageCode }}">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ .Title }}</title>
+  <link rel="stylesheet" href="{{ "css/styles.css" | relURL }}">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lunr.js/2.3.9/lunr.min.js"></script>
+</head>
+<body>
+  <header>
+    <h1>{{ .Title }}</h1>
+  </header>
+  <main>
+    <input id="search-field" type="search" placeholder="Search..." value="{{ .URL.Query.Get "q" }}">
+    <div id="search-results"></div>
+  </main>
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    let lunrIndex;
+    let lunrData;
+
+    fetch('/index.json')
+      .then(response => response.json())
+      .then(data => {
+        console.log('Index data:', data);
+        lunrData = data;
+        lunrIndex = lunr(function () {
+          this.ref('id');
+          this.field('title');
+          this.field('content');
+
+          lunrData.forEach(function (doc) {
+            this.add(doc);
+          }, this);
+        });
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const query = urlParams.get('q');
+        if (query) {
+          console.log('Initial search query:', query);
+          document.getElementById('search-field').value = query;
+          searchSite(query);
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching index.json:', error);
+      });
+
+    window.searchSite = function(query) {
+      console.log('searchSite function called');
+      if (!query) {
+        query = document.getElementById('search-field').value;
+      }
+      console.log('Search query:', query);
+      const results = lunrIndex.search(query);
+      console.log('Search results:', results);
+      const resultsContainer = document.getElementById('search-results');
+
+      resultsContainer.innerHTML = '';
+
+      if (results.length > 0) {
+        results.forEach(function(result) {
+          const item = lunrData.find(d => d.id === result.ref);
+          console.log('Item found:', item);
+          if (item) {
+            const element = document.createElement('div');
+            element.innerHTML = `<h2><a href="${item.url}">${item.title}</a></h2><p>${item.content.substring(0, 150)}...</p>`;
+            resultsContainer.appendChild(element);
+          }
+        });
+      } else {
+        resultsContainer.innerHTML = '<p>No results found</p>';
+      }
+      return false;
+    };
+
+    document.getElementById('search-field').addEventListener('input', function() {
+      searchSite();
+    });
+  });
+  </script>
+</body>
+</html>
