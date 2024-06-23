@@ -1,4 +1,4 @@
-{{- if .Param "pager" }}
+{{- if and (.Param "pager") (ne .Layout "about") }}
 {{- if or (.PrevInSection) (.NextInSection) }}
 <nav class="pager flex">
 	{{- if .PrevInSection }}

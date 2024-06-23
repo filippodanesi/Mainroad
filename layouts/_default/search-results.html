@@ -1,0 +1,71 @@
+{{ define "main" }}
+<main class="main" role="main">
+    <article class="post">
+        <header class="post__header">
+            <h1 class="post__title">
+                {{ if .Params.query }}
+                    Risultati di ricerca per: {{ .Params.query }}
+                {{ else }}
+                    {{ .Title }}
+                {{ end }}
+            </h1>
+        </header>
+        <div class="content post__content clearfix">
+            <div class="widget-search widget">
+                <form class="widget-search__form" role="search" method="get" action="{{ "search-results" | relURL }}">
+                    <input id="search-field-results" class="widget-search__field" type="search" placeholder="{{ T "search_placeholder" }}" value="{{ .Params.query }}" name="q" aria-label="{{ T "search_placeholder" }}">
+                    <input class="widget-search__submit" type="submit" value="Search">
+                </form>
+            </div>
+            <div id="main-search-results"></div>
+        </div>
+    </article>
+</main>
+
+<script type="application/ld+json" id="search-results-jsonld">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "itemListElement": []
+}
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.type === 'childList') {
+                updateJSONLD();
+            }
+        });
+    });
+
+    const config = { childList: true, subtree: true };
+    observer.observe(document.getElementById('main-search-results'), config);
+});
+
+function updateJSONLD() {
+    const results = document.querySelectorAll('#main-search-results > div');
+    const jsonLD = {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        "itemListElement": []
+    };
+
+    results.forEach((result, index) => {
+        const link = result.querySelector('a');
+        if (link) {
+            jsonLD.itemListElement.push({
+                "@type": "ListItem",
+                "position": index + 1,
+                "url": link.href,
+                "name": link.textContent
+            });
+        }
+    });
+
+    const script = document.getElementById('search-results-jsonld');
+    script.textContent = JSON.stringify(jsonLD, null, 2);
+}
+</script>
+{{ end }}

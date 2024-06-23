@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ block "title" . }}{{ if not .IsHome }}{{ .Title }} — {{ end }}{{ .Site.Title }}{{ end }}</title>
+    <title>{{ block "title" . }}{{ if .IsHome }}SERPsecrets — Latest SEO News, Strategies, and AI Insights{{ else }}{{ .Title }} — {{ .Site.Title }}{{ end }}{{ end }}</title>
     <script>(function(d,e){d[e]=d[e].replace("no-js","js");})(document.documentElement,"className");</script>
-    <meta name="description" content="{{ if .IsHome }}{{ .Site.Params.description }}{{ else }}{{ .Description }}{{ end }}"/>
+    <meta name="description" content="{{ block "description" . }}{{ if .IsHome }}{{ .Site.Params.description }}{{ else }}{{ .Description }}{{ end }}{{ end }}"/>
     <meta name="robots" content="noodp"/>
     <link rel="canonical" href="{{ .Permalink }}" />
 
@@ -41,46 +41,79 @@
     {{ if .IsHome }}
     <script type="application/ld+json">
     {
-      "@context": "http://schema.org",
-      "@type": "WebSite",
-      "url": "{{ .Permalink }}",
+      "@context": "https://schema.org",
+      "@type": "Blog",
       "name": "{{ .Site.Title }}",
-      "author": {
-        "@type": "Person",
-        "name": {{ .Site.Author.name }}
+      "url": "{{ .Site.BaseURL }}",
+      "description": "{{ .Site.Params.description }}",
+      "publisher": {
+        "@type": "Organization",
+        "name": "{{ .Site.Title }}"
       },
-      "description": "{{ .Site.Params.description }}"
+      "sameAs": [
+        "https://github.com/filippodanesi",
+        "https://www.linkedin.com/in/filippodanesi/",
+        "https://twitter.com/filippodanesi"
+      ],
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "{{ .Site.BaseURL }}search-results/?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      },
+      "blogPosts": [
+        {{ range $index, $element := (where .Site.RegularPages "Type" "post") }}
+        {
+          "@type": "BlogPosting",
+          "mainEntityOfPage": "{{ .Permalink }}",
+          "headline": "{{ .Title }}",
+          "author": {
+            "@type": "Person",
+            "name": "{{ .Site.Author.name }}"
+          },
+          "datePublished": "{{ .Date.Format "2006-01-02" }}",
+          "dateModified": "{{ .Lastmod.Format "2006-01-02" }}",
+          "image": {
+            "@type": "ImageObject",
+            "url": "{{ with .Params.thumbnail }}{{ . | absURL }}{{ else }}{{ "default-image.jpg" | absURL }}{{ end }}",
+            "height": "200",
+            "width": "400"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "{{ .Site.Title }}",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "{{ .Site.Params.logo | absURL }}"
+            }
+          }
+        }{{ if ne (add $index 1) (len (where .Site.RegularPages "Type" "post")) }},{{ end }}
+        {{ end }}
+      ]
     }
     </script>
-    {{ end }}
-
-    {{ if .IsPage }}
+    {{ else if .IsPage }}
     <script type="application/ld+json">
       {{ if eq .Section "post" }}
       {
         "@context": "http://schema.org",
         "@type": "BlogPosting",
-        "headline": {{ .Title }},
-        "genre": {{ .Params.categories }},
-        "url": {{ .Permalink }},
-        "datePublished": {{ time .Date }},
-        "description": {{ .Description }},
+        "headline": "{{ .Title }}",
+        "genre": "{{ .Params.categories }}",
+        "url": "{{ .Permalink }}",
+        "datePublished": "{{ time .Date }}",
+        "description": "{{ .Description }}",
         "author": {
           "@type": "Person",
-          "name": {{ .Site.Author.name }}
+          "name": "{{ .Site.Author.name }}"
         }
       }
-      {{ else }}
+      {{ else if and (ne .Layout "search-results") (ne .Layout "taxonomy") (ne .Layout "term") }}
       {
         "@context": "http://schema.org",
-        "@type": "AboutPage",
-        "url": {{ .Permalink }},
-        "name": {{ .Title }},
-        "author": {
-          "@type": "Person",
-          "name": {{ .Site.Author.name }}
-        },
-        "description": {{ .Site.Params.description }}
+        "@type": "WebPage",
+        "url": "{{ .Permalink }}",
+        "name": "{{ .Title }}",
+        "description": "{{ .Description }}"
       }
       {{ end }}
     </script>
@@ -126,56 +159,12 @@
         </div>
         {{ block "footer" . }}{{ partial "footer.html" . }}{{ end }}
     </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/lunr.js/2.3.9/lunr.min.js"></script>
-<script src="/index.json"></script>
-<script async defer src="{{ "js/menu.js" | relURL }}"></script>
-{{ range .Site.Params.customJS -}}
-<script src="{{ . | relURL }}"></script>
-{{- end }}
-{{- partial "mathjax.html" . -}}
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-      let lunrIndex;
-      let lunrData;
-
-      fetch('/index.json')
-        .then(response => response.json())
-        .then(data => {
-          console.log('Index data:', data); // Debug: Visualizza i dati dell'indice
-          lunrData = data;
-          lunrIndex = lunr(function () {
-            this.ref('id');
-            this.field('title');
-            this.field('content');
-
-            lunrData.forEach(function (doc) {
-              this.add(doc);
-            }, this);
-          });
-        });
-
-      window.searchSite = function() {
-        const query = document.getElementById('search-field').value;
-        console.log('Search query:', query); // Debug: Visualizza la query di ricerca
-        const results = lunrIndex.search(query);
-        console.log('Search results:', results); // Debug: Visualizza i risultati della ricerca
-        const resultsContainer = document.getElementById('search-results');
-
-        resultsContainer.innerHTML = '';
-
-        if (results.length > 0) {
-          results.forEach(function(result) {
-            const item = lunrData.find(d => d.id === result.ref);
-            const element = document.createElement('div');
-            element.innerHTML = `<h2><a href="${item.url}">${item.title}</a></h2><p>${item.content.substring(0, 150)}...</p>`;
-            resultsContainer.appendChild(element);
-          });
-        } else {
-          resultsContainer.innerHTML = '<p>No results found</p>';
-        }
-        return false;
-      };
-    });
-</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lunr.js/2.3.9/lunr.min.js"></script>
+    <script src="{{ "js/search.js" | relURL }}"></script>
+    <script async defer src="{{ "js/menu.js" | relURL }}"></script>
+    {{ range .Site.Params.customJS -}}
+    <script src="{{ . | relURL }}"></script>
+    {{- end }}
+    {{- partial "mathjax.html" . -}}
 </body>
 </html>
