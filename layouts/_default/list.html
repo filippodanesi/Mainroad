@@ -16,3 +16,29 @@
 </main>
 {{ partial "pagination.html" . }}
 {{ end }}
+
+{{ define "footer" }}
+{{ partial "footer.html" . }}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "itemListElement": [
+    {{ range $index, $element := .Paginator.Pages }}
+    {
+      "@type": "ListItem",
+      "position": {{ add $index 1 }},
+      "url": "{{ .Permalink }}",
+      "name": "{{ .Title }}"
+      {{- with .Description -}}
+      ,"description": "{{ . }}"
+      {{- end -}}
+      {{- with .Params.image -}}
+      ,"image": "{{ . | absURL }}"
+      {{- end -}}
+    }{{ if ne (add $index 1) (len $.Paginator.Pages) }},{{ end }}
+    {{ end }}
+  ]
+}
+</script>
+{{ end }}

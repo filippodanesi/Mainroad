@@ -1394,3 +1394,20 @@ textarea {
 #search-results p {
     margin-bottom: 1.5rem;
 }
+
+.breadcrumb {
+	padding: 10px 0 10px 20px;
+	list-style: none;
+	background-color: #f8f9fa;
+  }
+  .breadcrumb-item {
+	display: inline;
+  }
+  .breadcrumb-item + .breadcrumb-item::before {
+	content: "/";
+	padding: 0 5px;
+	color: #6c757d;
+  }
+  .breadcrumb-item.active {
+	color: #6c757d;
+  }

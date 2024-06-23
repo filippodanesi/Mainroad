@@ -5,120 +5,148 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ block "title" . }}{{ if .IsHome }}SERPsecrets — Latest SEO News, Strategies, and AI Insights{{ else }}{{ .Title }} — {{ .Site.Title }}{{ end }}{{ end }}</title>
     <script>(function(d,e){d[e]=d[e].replace("no-js","js");})(document.documentElement,"className");</script>
-    <meta name="description" content="{{ block "description" . }}{{ if .IsHome }}{{ .Site.Params.description }}{{ else }}{{ .Description }}{{ end }}{{ end }}"/>
+    <meta name="description" content="{{ block "description" . }}{{ with .Description }}{{ . }}{{ else }}{{ with .Summary }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}{{ end }}{{ end }}"/>
     <meta name="robots" content="noodp"/>
     <link rel="canonical" href="{{ .Permalink }}" />
 
+    {{ $image := "" }}
+    {{ if .Params.thumbnail }}
+        {{ $image = .Params.thumbnail | absURL }}
+    {{ else if .Params.cover }}
+        {{ $image = .Params.cover | absURL }}
+    {{ else if .Resources.GetMatch "thumbnail.*" }}
+        {{ $image = (.Resources.GetMatch "thumbnail.*").Permalink }}
+    {{ else if .Resources.GetMatch "cover.*" }}
+        {{ $image = (.Resources.GetMatch "cover.*").Permalink }}
+    {{ else }}
+        {{ $image = "img/opengraph.png" | absURL }}
+    {{ end }}
+
+    <!-- Twitter Card data -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:description" content="{{ if .IsHome }}{{ .Site.Params.description }}{{ else }}{{ .Description }}{{ end }}" />
+    <meta name="twitter:description" content="{{ with .Description }}{{ . }}{{ else }}{{ with .Summary }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}{{ end }}" />
     <meta name="twitter:title" content="{{ .Title }}{{ if .IsHome }} — {{ .Site.Params.Tagline }}{{ else }} — {{ .Site.Title }}{{ end }}" />
     <meta name="twitter:site" content="{{ .Site.Params.twitter }}" />
     <meta name="twitter:creator" content="{{ .Site.Params.twitter }}" />
-    {{ if .Params.thumbnail }}
-    <meta name="twitter:image" content="{{ .Params.thumbnail | absURL }}" />
-    {{ else if .IsHome }}
-    <meta name="twitter:image" content="{{ "3f1fe209-0848-47df-9717-0c2bcd60c7b4.png" | absURL }}" />
-    {{ else }}
-    <meta name="twitter:image" content="{{ "3f1fe209-0848-47df-9717-0c2bcd60c7b4.png" | absURL }}" />
-    {{ end }}
+    <meta name="twitter:image" content="{{ $image }}" />
 
+    <!-- Open Graph data -->
     <meta property="og:locale" content="en_US" />
     <meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}" />
     <meta content="{{ .Title }}{{ if .IsHome }} — {{ .Site.Params.Tagline }}{{ else }} — {{ .Site.Title }}{{ end }}" property="og:title">
-    <meta content="{{ if .IsHome }}{{ .Site.Params.description }}{{ else }}{{ .Description }}{{ end }}" property="og:description">
+    <meta content="{{ with .Description }}{{ . }}{{ else }}{{ with .Summary }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}{{ end }}" property="og:description">
     <meta property="og:url" content="{{ .Permalink }}" />
     <meta property="og:site_name" content="{{ .Site.Title }}" />
-    {{ if .Params.thumbnail }}
-    <meta property="og:image" content="{{ .Params.thumbnail | absURL }}" />
-    {{ else if .IsHome }}
-    <meta property="og:image" content="static/img/3f1fe209-0848-47df-9717-0c2bcd60c7b4.png">
-    {{ else }}
-    <meta property="og:image" content="{{ "img/3f1fe209-0848-47df-9717-0c2bcd60c7b4.png" | absURL }}" />
-    {{ end }}
+    <meta property="og:image" content="{{ $image }}" />
     {{ range .Params.categories }}<meta property="article:section" content="{{ . }}" />{{ end }}
     {{ if isset .Params "date" }}<meta property="article:published_time" content="{{ time .Date }}" />{{ end }}
 
-    {{ if .IsHome }}
+    <!-- Global Schema.org markup -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "Blog",
-      "name": "{{ .Site.Title }}",
-      "url": "{{ .Site.BaseURL }}",
-      "description": "{{ .Site.Params.description }}",
-      "publisher": {
-        "@type": "Organization",
-        "name": "{{ .Site.Title }}"
-      },
-      "sameAs": [
-        "https://github.com/filippodanesi",
-        "https://www.linkedin.com/in/filippodanesi/",
-        "https://twitter.com/filippodanesi"
-      ],
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": "{{ .Site.BaseURL }}search-results/?q={search_term_string}",
-        "query-input": "required name=search_term_string"
-      },
-      "blogPosts": [
-        {{ range $index, $element := (where .Site.RegularPages "Type" "post") }}
+      "@graph": [
         {
-          "@type": "BlogPosting",
-          "mainEntityOfPage": "{{ .Permalink }}",
-          "headline": "{{ .Title }}",
-          "author": {
-            "@type": "Person",
-            "name": "{{ .Site.Author.name }}"
-          },
-          "datePublished": "{{ .Date.Format "2006-01-02" }}",
-          "dateModified": "{{ .Lastmod.Format "2006-01-02" }}",
-          "image": {
-            "@type": "ImageObject",
-            "url": "{{ with .Params.thumbnail }}{{ . | absURL }}{{ else }}{{ "default-image.jpg" | absURL }}{{ end }}",
-            "height": "200",
-            "width": "400"
-          },
+          "@type": "WebSite",
+          "@id": "{{ .Site.BaseURL }}#website",
+          "url": "{{ .Site.BaseURL }}",
+          "name": "{{ .Site.Title }}",
+          "description": "{{ .Site.Params.description }}",
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "{{ .Site.BaseURL }}search-results/?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+          }
+        },
+        {{ if .IsHome }}
+        {
+          "@type": "Blog",
+          "@id": "{{ .Site.BaseURL }}#blog",
+          "url": "{{ .Site.BaseURL }}",
+          "name": "{{ .Site.Title }}",
+          "description": "{{ .Site.Params.description }}",
           "publisher": {
             "@type": "Organization",
             "name": "{{ .Site.Title }}",
             "logo": {
               "@type": "ImageObject",
-              "url": "{{ .Site.Params.logo | absURL }}"
+              "url": "{{ "img/logo.png" | absURL }}",
+              "width": "600",
+              "height": "60"
             }
           }
-        }{{ if ne (add $index 1) (len (where .Site.RegularPages "Type" "post")) }},{{ end }}
+        },
+        {{ end }}
+        {
+          "@type": {{ if eq .RelPermalink "/about/" }}"AboutPage"{{ else }}"WebPage"{{ end }},
+          "@id": "{{ .Permalink }}#webpage",
+          "url": "{{ .Permalink }}",
+          "name": "{{ .Title }}",
+          "isPartOf": {
+            "@id": "{{ .Site.BaseURL }}#website"
+          },
+          {{ if .IsHome }}
+          "about": {
+            "@id": "{{ .Site.BaseURL }}#blog"
+          },
+          {{ end }}
+          "description": "{{ with .Description }}{{ . }}{{ else }}{{ with .Summary }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}{{ end }}",
+          "image": "{{ $image }}"
+          {{ if and .IsPage (eq .Section "post") }},
+          "breadcrumb": {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "{{ .Site.BaseURL }}"
+              },
+              {{ if .Params.categories }}
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "{{ index .Params.categories 0 }}",
+                "item": "{{ "categories/" | relLangURL }}{{ index .Params.categories 0 | urlize }}/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "{{ .Title }}",
+                "item": "{{ .Permalink }}"
+              }
+              {{ else }}
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "{{ .Title }}",
+                "item": "{{ .Permalink }}"
+              }
+              {{ end }}
+            ]
+          }
+          {{ end }}
+        }
+        {{ if and .IsPage (eq .Section "post") }}
+        ,{
+          "@type": "BlogPosting",
+          "headline": "{{ .Title }}",
+          "genre": "{{ range .Params.categories }}{{ . }}{{ end }}",
+          "url": "{{ .Permalink }}",
+          "datePublished": "{{ time .Date }}",
+          "description": "{{ with .Description }}{{ . }}{{ else }}{{ with .Summary }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}{{ end }}",
+          "author": {
+            "@type": "Person",
+            "name": "{{ .Site.Author.name }}"
+          },
+          "image": "{{ $image }}"
+        }
         {{ end }}
       ]
     }
     </script>
-    {{ else if .IsPage }}
-    <script type="application/ld+json">
-      {{ if eq .Section "post" }}
-      {
-        "@context": "http://schema.org",
-        "@type": "BlogPosting",
-        "headline": "{{ .Title }}",
-        "genre": "{{ .Params.categories }}",
-        "url": "{{ .Permalink }}",
-        "datePublished": "{{ time .Date }}",
-        "description": "{{ .Description }}",
-        "author": {
-          "@type": "Person",
-          "name": "{{ .Site.Author.name }}"
-        }
-      }
-      {{ else if and (ne .Layout "search-results") (ne .Layout "taxonomy") (ne .Layout "term") }}
-      {
-        "@context": "http://schema.org",
-        "@type": "WebPage",
-        "url": "{{ .Permalink }}",
-        "name": "{{ .Title }}",
-        "description": "{{ .Description }}"
-      }
-      {{ end }}
-    </script>
-    {{ end }}
 
+    <!-- Styles and other head elements -->
     {{- $googleFontsLink := .Site.Params.googleFontsLink | default "https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700" }}
     {{- if hasPrefix $googleFontsLink "https://fonts.googleapis.com/" }}
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -145,6 +173,20 @@
 <body class="body">
     <div class="container container--outer">
         {{ block "header" . }}{{ partial "header.html" . }}{{ end }}
+
+        <!-- Breadcrumbs per i post -->
+        {{ if and .IsPage (eq .Section "post") }}
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ .Site.BaseURL }}">Home</a></li>
+                {{ if .Params.categories }}
+                <li class="breadcrumb-item"><a href="{{ "categories/" | relLangURL }}{{ index .Params.categories 0 | urlize }}/">{{ index .Params.categories 0 }}</a></li>
+                {{ end }}
+                <li class="breadcrumb-item active" aria-current="page">{{ .Title }}</li>
+            </ol>
+        </nav>
+        {{ end }}
+
         <div class="wrapper flex">
             <div class="primary">
             {{ block "main" . }}
