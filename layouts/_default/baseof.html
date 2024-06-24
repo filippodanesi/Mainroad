@@ -180,71 +180,76 @@
         {{ template "_internal/google_analytics.html" . }}
     {{- end }}
 
-		<!-- Vercel Analytics Integration -->
-		{{ if not .Site.IsServer }}
-		<script type="module">
-		import { getCLS, getFCP, getFID, getLCP, getTTFB } from 'https://unpkg.com/web-vitals@3?module';
-		const vitalsUrl = 'https://vitals.vercel-analytics.com/v1/vitals';
+    <!-- Vercel Analytics Integration -->
+    {{ if not .Site.IsServer }}
+    <script type="module">
+     import { getCLS, getFCP, getFID, getLCP, getTTFB } from 'https://unpkg.com/web-vitals@3?module';
 
-		function getConnectionSpeed() {
-			return 'connection' in navigator &&
-							navigator['connection'] &&
-							'effectiveType' in navigator['connection']
-						? navigator['connection']['effectiveType']
-						: '';
-		}
+     const vitalsUrl = 'https://vitals.vercel-analytics.com/v1/vitals';
 
-		function sendToAnalytics(metric, options) {
-			const analyticsId = '{{ os.Getenv "VERCEL_ANALYTICS_ID" }}';
-			if (!analyticsId) {
-				console.warn('VERCEL_ANALYTICS_ID is not set. Skipping analytics.');
-				return;
-			}
+     function getConnectionSpeed() {
+       return 'connection' in navigator &&
+              navigator['connection'] &&
+              'effectiveType' in navigator['connection']
+            ? navigator['connection']['effectiveType']
+            : '';
+     }
 
-			const body = {
-				dsn: analyticsId,
-				id: metric.id,
-				page: '{{ .Page.RelPermalink }}',
-				href: location.href,
-				event_name: metric.name,
-				value: metric.value.toString(),
-				speed: getConnectionSpeed()
-			};
+     function sendToAnalytics(metric, options) {
+       const page = Object.entries(options.params || {}).reduce(
+         (acc, [key, value]) => acc.replace(value, `[${key}]`),
+         options.path,
+       );
 
-			if (options.debug) {
-				console.log('[Analytics]', metric.name, JSON.stringify(body, null, 2));
-			}
+       const body = {
+         dsn: options.analyticsId, // This should be set during build time
+         id: metric.id,
+         page,
+         href: location.href,
+         event_name: metric.name,
+         value: metric.value.toString(),
+         speed: getConnectionSpeed(),
+       };
 
-			const blob = new Blob([new URLSearchParams(body).toString()], {
-				type: 'application/x-www-form-urlencoded'
-			});
-			if (navigator.sendBeacon) {
-				navigator.sendBeacon(vitalsUrl, blob);
-			} else {
-				fetch(vitalsUrl, {
-					body: blob,
-					method: 'POST',
-					credentials: 'omit',
-					keepalive: true
-				}).catch(error => console.error('Failed to send analytics:', error));
-			}
-		}
+       if (options.debug) {
+         console.log('[Analytics]', metric.name, JSON.stringify(body, null, 2));
+       }
 
-		function webVitals(options) {
-			try {
-				getFID((metric) => sendToAnalytics(metric, options));
-				getTTFB((metric) => sendToAnalytics(metric, options));
-				getLCP((metric) => sendToAnalytics(metric, options));
-				getCLS((metric) => sendToAnalytics(metric, options));
-				getFCP((metric) => sendToAnalytics(metric, options));
-			} catch (err) {
-				console.error('[Analytics]', err);
-			}
-		}
+       const blob = new Blob([new URLSearchParams(body).toString()], {
+         type: 'application/x-www-form-urlencoded',
+       });
+       if (navigator.sendBeacon) {
+         navigator.sendBeacon(vitalsUrl, blob);
+       } else
+         fetch(vitalsUrl, {
+           body: blob,
+           method: 'POST',
+           credentials: 'omit',
+           keepalive: true,
+         });
+     }
 
-		webVitals({ debug: true });
-		</script>
-		{{ end }}
+     function webVitals(options) {
+       try {
+         getFID((metric) => sendToAnalytics(metric, options));
+         getTTFB((metric) => sendToAnalytics(metric, options));
+         getLCP((metric) => sendToAnalytics(metric, options));
+         getCLS((metric) => sendToAnalytics(metric, options));
+         getFCP((metric) => sendToAnalytics(metric, options));
+       } catch (err) {
+         console.error('[Analytics]', err);
+       }
+     }
+
+     // Call webVitals with the necessary options
+     webVitals({
+       analyticsId: '{{ os.Getenv "VERCEL_ANALYTICS_ID" }}', // This should be set during build time
+       debug: true,
+       path: '{{ .Page.RelPermalink }}',
+       params: {}, // Add any dynamic parameters here if needed
+     });
+    </script>
+    {{ end }}
 </head>
 <body class="body">
     <div class="container container--outer">
