@@ -179,77 +179,6 @@
     {{- if not .Site.IsServer }}
         {{ template "_internal/google_analytics.html" . }}
     {{- end }}
-
-    <!-- Vercel Analytics Integration -->
-    {{ if not .Site.IsServer }}
-    <script type="module">
-     import { getCLS, getFCP, getFID, getLCP, getTTFB } from 'https://unpkg.com/web-vitals@3?module';
-
-     const vitalsUrl = 'https://vitals.vercel-analytics.com/v1/vitals';
-
-     function getConnectionSpeed() {
-       return 'connection' in navigator &&
-              navigator['connection'] &&
-              'effectiveType' in navigator['connection']
-            ? navigator['connection']['effectiveType']
-            : '';
-     }
-
-     function sendToAnalytics(metric, options) {
-       const page = Object.entries(options.params || {}).reduce(
-         (acc, [key, value]) => acc.replace(value, `[${key}]`),
-         options.path,
-       );
-
-       const body = {
-         dsn: options.analyticsId, // This should be set during build time
-         id: metric.id,
-         page,
-         href: location.href,
-         event_name: metric.name,
-         value: metric.value.toString(),
-         speed: getConnectionSpeed(),
-       };
-
-       if (options.debug) {
-         console.log('[Analytics]', metric.name, JSON.stringify(body, null, 2));
-       }
-
-       const blob = new Blob([new URLSearchParams(body).toString()], {
-         type: 'application/x-www-form-urlencoded',
-       });
-       if (navigator.sendBeacon) {
-         navigator.sendBeacon(vitalsUrl, blob);
-       } else
-         fetch(vitalsUrl, {
-           body: blob,
-           method: 'POST',
-           credentials: 'omit',
-           keepalive: true,
-         });
-     }
-
-     function webVitals(options) {
-       try {
-         getFID((metric) => sendToAnalytics(metric, options));
-         getTTFB((metric) => sendToAnalytics(metric, options));
-         getLCP((metric) => sendToAnalytics(metric, options));
-         getCLS((metric) => sendToAnalytics(metric, options));
-         getFCP((metric) => sendToAnalytics(metric, options));
-       } catch (err) {
-         console.error('[Analytics]', err);
-       }
-     }
-
-     // Call webVitals with the necessary options
-     webVitals({
-       analyticsId: '{{ os.Getenv "VERCEL_ANALYTICS_ID" }}', // This should be set during build time
-       debug: true,
-       path: '{{ .Page.RelPermalink }}',
-       params: {}, // Add any dynamic parameters here if needed
-     });
-    </script>
-    {{ end }}
 </head>
 <body class="body">
     <div class="container container--outer">
@@ -289,5 +218,14 @@
     <script src="{{ . | relURL }}"></script>
     {{- end }}
     {{- partial "mathjax.html" . -}}
+		<!-- Vercel Analytics Integration -->
+		<script>
+			window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
+		</script>
+		<script defer src="/_vercel/speed-insights/script.js"></script>
+		<script>
+			window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+		</script>
+		<script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>
