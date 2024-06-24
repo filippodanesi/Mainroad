@@ -52,120 +52,93 @@
     {{ end }}
 
     <!-- Global Schema.org markup -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@graph": [
-        {
-          "@type": "WebSite",
-          "@id": "{{ .Site.BaseURL }}#website",
-          "url": "{{ .Site.BaseURL }}",
-          "name": {{ .Site.Title | jsonify }},
-          "description": {{ .Site.Params.description | jsonify }},
-          "potentialAction": {
-            "@type": "SearchAction",
-            "target": "{{ .Site.BaseURL }}search-results/?q={search_term_string}",
-            "query-input": "required name=search_term_string"
-          }
-        },
-        {{ if .IsHome }}
-        {
-          "@type": "Blog",
-          "@id": "{{ .Site.BaseURL }}#blog",
-          "url": "{{ .Site.BaseURL }}",
-          "name": {{ .Site.Title | jsonify }},
-          "description": {{ .Site.Params.description | jsonify }},
-          "publisher": {
-            "@type": "Organization",
-            "name": {{ .Site.Title | jsonify }},
-            "logo": {
-              "@type": "ImageObject",
-              "url": "{{ "img/logo.png" | absURL }}",
-              "width": "600",
-              "height": "60"
-            }
-          }
-        },
-        {{ end }}
-        {
-          "@type": {{ if eq .RelPermalink "/about/" }}"AboutPage"{{ else }}"WebPage"{{ end }},
-          "@id": "{{ .Permalink }}#webpage",
-          "url": "{{ .Permalink }}",
-          "name": {{ .Title | jsonify }},
-          "isPartOf": {
-            "@id": "{{ .Site.BaseURL }}#website"
-          },
-          {{ if .IsHome }}
-          "about": {
-            "@id": "{{ .Site.BaseURL }}#blog"
-          },
-          {{ end }}
-          "description": {{ with .Description }}{{ . | jsonify }}{{ else }}{{ with .Summary }}{{ . | jsonify }}{{ else }}{{ .Site.Params.description | jsonify }}{{ end }}{{ end }},
-          "image": {
-            "@type": "ImageObject",
-            "url": {{ $image | jsonify }},
-            "width": "1200",
-            "height": "630"
-          }
-          {{ if and .IsPage (eq .Section "post") }},
-          "breadcrumb": {
-            "@type": "BreadcrumbList",
-            "itemListElement": [
-              {
-                "@type": "ListItem",
-                "position": 1,
-                "name": "Home",
-                "item": "{{ .Site.BaseURL }}"
-              },
-              {{ if .Params.categories }}
-              {
-                "@type": "ListItem",
-                "position": 2,
-                "name": {{ index .Params.categories 0 | jsonify }},
-                "item": "{{ .Site.BaseURL }}categories/{{ index .Params.categories 0 | urlize }}/"
-              },
-              {
-                "@type": "ListItem",
-                "position": 3,
-                "name": {{ .Title | jsonify }},
-                "item": "{{ .Permalink }}"
-              }
-              {{ else }}
-              {
-                "@type": "ListItem",
-                "position": 2,
-                "name": {{ .Title | jsonify }},
-                "item": "{{ .Permalink }}"
-              }
-              {{ end }}
-            ]
-          }
-          {{ end }}
-        }
-        {{ if and .IsPage (eq .Section "post") }}
-        ,{
-          "@type": "BlogPosting",
-          "headline": {{ .Title | jsonify }},
-          "genre": {{ delimit .Params.categories ", " | jsonify }},
-          "url": "{{ .Permalink }}",
-          "datePublished": "{{ .Date.Format "2006-01-02T15:04:05Z07:00" }}",
-          "dateModified": "{{ .Lastmod.Format "2006-01-02T15:04:05Z07:00" }}",
-          "description": {{ with .Description }}{{ . | jsonify }}{{ else }}{{ with .Summary }}{{ . | jsonify }}{{ else }}{{ .Site.Params.description | jsonify }}{{ end }}{{ end }},
-          "author": {
-            "@type": "Person",
-            "name": {{ .Site.Author.name | jsonify }}
-          },
-          "image": {
-            "@type": "ImageObject",
-            "url": {{ $image | jsonify }},
-            "width": "1200",
-            "height": "630"
-          }
-        }
-        {{ end }}
-      ]
-    }
-    </script>
+		<script type="application/ld+json">
+			{
+				"@context": "https://schema.org",
+				"@graph": [
+					{
+						"@type": "WebSite",
+						"@id": {{ .Site.BaseURL | jsonify }}#website",
+						"url": {{ .Site.BaseURL | jsonify }},
+						"name": {{ .Site.Title | jsonify }},
+						"description": {{ .Site.Params.description | jsonify }},
+						"potentialAction": {
+							"@type": "SearchAction",
+							"target": {
+								"@type": "EntryPoint",
+								"urlTemplate": {{ (printf "%ssearch-results/?q={search_term_string}" .Site.BaseURL) | jsonify }}
+							},
+							"query-input": {
+								"@type": "PropertyValueSpecification",
+								"valueRequired": true,
+								"valueName": "search_term_string"
+							}
+						}
+					},
+					{{ if .IsHome }}
+					{
+						"@type": "Blog",
+						"@id": {{ .Site.BaseURL | jsonify }}#blog",
+						"url": {{ .Site.BaseURL | jsonify }},
+						"name": {{ .Site.Title | jsonify }},
+						"description": {{ .Site.Params.description | jsonify }},
+						"publisher": {
+							"@type": "Organization",
+							"name": {{ .Site.Title | jsonify }},
+							"logo": {
+								"@type": "ImageObject",
+								"url": {{ "img/logo.png" | absURL | jsonify }},
+								"width": "600",
+								"height": "60"
+							}
+						}
+					},
+					{{ end }}
+					{
+						"@type": {{ if eq .RelPermalink "/about/" }}"AboutPage"{{ else }}"WebPage"{{ end }},
+						"@id": {{ .Permalink | jsonify }}#webpage",
+						"url": {{ .Permalink | jsonify }},
+						"name": {{ .Title | jsonify }},
+						"isPartOf": {
+							"@id": {{ .Site.BaseURL | jsonify }}#website"
+						},
+						{{ if .IsHome }}
+						"about": {
+							"@id": {{ .Site.BaseURL | jsonify }}#blog"
+						},
+						{{ end }}
+						"description": {{ with .Description }}{{ . | jsonify }}{{ else }}{{ with .Summary }}{{ . | jsonify }}{{ else }}{{ .Site.Params.description | jsonify }}{{ end }}{{ end }},
+						"image": {
+							"@type": "ImageObject",
+							"url": {{ $image | jsonify }},
+							"width": "1200",
+							"height": "630"
+						}
+					}
+					{{ if and .IsPage (eq .Section "post") }}
+					,{
+						"@type": "BlogPosting",
+						"headline": {{ .Title | jsonify }},
+						"genre": {{ .Params.categories | jsonify }},
+						"url": {{ .Permalink | jsonify }},
+						"datePublished": {{ .Date.Format "2006-01-02T15:04:05Z07:00" | jsonify }},
+						"dateModified": {{ .Lastmod.Format "2006-01-02T15:04:05Z07:00" | jsonify }},
+						"description": {{ with .Description }}{{ . | jsonify }}{{ else }}{{ with .Summary }}{{ . | jsonify }}{{ else }}{{ .Site.Params.description | jsonify }}{{ end }}{{ end }},
+						"author": {
+							"@type": "Person",
+							"name": {{ .Site.Author.name | jsonify }}
+						},
+						"image": {
+							"@type": "ImageObject",
+							"url": {{ $image | jsonify }},
+							"width": "1200",
+							"height": "630"
+						}
+					}
+					{{ end }}
+				]
+			}
+			</script>
 
     <!-- Styles and other head elements -->
     {{- $googleFontsLink := .Site.Params.googleFontsLink | default "https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700" }}
