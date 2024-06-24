@@ -238,5 +238,44 @@
         window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
     </script>
     <script defer src="/_vercel/insights/script.js"></script>
+		 <!-- Show more button tag -->
+		 <script>
+			document.addEventListener('DOMContentLoaded', function() {
+					const tagList = document.getElementById('tag-list');
+					const toggleButton = document.getElementById('toggle-tags');
+					const initialTagCount = 10;
+					let allTags = [];
+					let isExpanded = false;
+
+					// Raccogliamo tutti i tag esistenti
+					tagList.querySelectorAll('.widget-taglist__link').forEach(tag => {
+							allTags.push(tag);
+					});
+
+					function displayTags(count) {
+							allTags.forEach((tag, index) => {
+									tag.style.display = index < count ? 'inline-block' : 'none';
+							});
+					}
+
+					function toggleTags() {
+							if (isExpanded) {
+									displayTags(initialTagCount);
+									toggleButton.textContent = 'Show more';
+									isExpanded = false;
+							} else {
+									displayTags(allTags.length);
+									toggleButton.textContent = 'Show less';
+									isExpanded = true;
+							}
+					}
+
+					if (allTags.length > initialTagCount) {
+							displayTags(initialTagCount);
+							toggleButton.style.display = 'block';
+							toggleButton.addEventListener('click', toggleTags);
+					}
+			});
+			</script>
 </body>
 </html>

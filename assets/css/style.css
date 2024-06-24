@@ -1411,3 +1411,32 @@ textarea {
   .breadcrumb-item.active {
 	color: #6c757d;
   }
+
+
+  .toggle-tags-btn {
+    display: block;
+    margin-top: 10px;
+    padding: 5px 10px;
+    background-color: #F5F5F5;
+    color: #333;
+    border: 1px solid #F0F0F0;
+    font-size: 0.9em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.toggle-tags-btn:hover {
+    background-color: #e0e0e0;
+}
+
+.toggle-tags-btn:focus,
+.toggle-tags-btn:active {
+    outline: none;
+    box-shadow: none;
+    background-color: #F5F5F5; /* Mantiene il colore originale */
+}
+
+/* Rimuove l'outline predefinita del browser su focus */
+.toggle-tags-btn::-moz-focus-inner {
+    border: 0;
+}
