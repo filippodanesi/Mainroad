@@ -7,7 +7,7 @@
     <script>(function(d,e){d[e]=d[e].replace("no-js","js");})(document.documentElement,"className");</script>
     <meta name="description" content="{{ block "description" . }}{{ with .Description }}{{ . }}{{ else }}{{ with .Summary }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}{{ end }}{{ end }}"/>
     <meta name="robots" content="noodp"/>
-		<meta name="author" content="Filippo Danesi">
+    <meta name="author" content="Filippo Danesi">
     <link rel="canonical" href="{{ .Permalink }}" />
 
     {{ $image := "" }}
@@ -23,10 +23,17 @@
         {{ $image = "img/opengraph.png" | absURL }}
     {{ end }}
 
+    {{ $title := .Title }}
+    {{ if .IsHome }}
+        {{ $title = "SERPsecrets — Latest SEO News, Strategies, and AI Insights" }}
+    {{ else }}
+        {{ $title = printf "%s — %s" .Title .Site.Title }}
+    {{ end }}
+
     <!-- Twitter Card data -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:description" content="{{ with .Description }}{{ . }}{{ else }}{{ with .Summary }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}{{ end }}" />
-    <meta name="twitter:title" content="{{ .Title }}{{ if .IsHome }} — {{ .Site.Params.Tagline }}{{ else }} — {{ .Site.Title }}{{ end }}" />
+    <meta name="twitter:title" content="{{ $title }}" />
     <meta name="twitter:site" content="{{ .Site.Params.twitter }}" />
     <meta name="twitter:creator" content="{{ .Site.Params.twitter }}" />
     <meta name="twitter:image" content="{{ $image }}" />
@@ -34,13 +41,15 @@
     <!-- Open Graph data -->
     <meta property="og:locale" content="en_US" />
     <meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}" />
-    <meta content="{{ .Title }}{{ if .IsHome }} — {{ .Site.Params.Tagline }}{{ else }} — {{ .Site.Title }}{{ end }}" property="og:title">
-    <meta content="{{ with .Description }}{{ . }}{{ else }}{{ with .Summary }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}{{ end }}" property="og:description">
+    <meta property="og:title" content="{{ $title }}">
+    <meta property="og:description" content="{{ with .Description }}{{ . }}{{ else }}{{ with .Summary }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}{{ end }}">
     <meta property="og:url" content="{{ .Permalink }}" />
     <meta property="og:site_name" content="{{ .Site.Title }}" />
     <meta property="og:image" content="{{ $image }}" />
     {{ range .Params.categories }}<meta property="article:section" content="{{ . }}" />{{ end }}
-    {{ if isset .Params "date" }}<meta property="article:published_time" content="{{ time .Date }}" />{{ end }}
+    {{ if and .IsPage (eq .Section "post") }}
+    <meta property="article:published_time" content="{{ .Date.Format "2006-01-02T15:04:05Z07:00" }}" />
+    {{ end }}
 
     <!-- Global Schema.org markup -->
     <script type="application/ld+json">
