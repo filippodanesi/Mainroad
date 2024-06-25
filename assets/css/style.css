@@ -1440,3 +1440,31 @@ textarea {
 .toggle-tags-btn::-moz-focus-inner {
     border: 0;
 }
+
+/* Font predefinito per tutto il sito */
+body {
+    font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* Font per i titoli (manteniamo Inter, ma possiamo specificare pesi diversi se necessario) */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif !important;
+    font-weight: 700; /* Bold per i titoli */
+}
+
+/* Merriweather per il contenuto principale delle pagine e degli articoli */
+.content, /* Classe generica per il contenuto */
+.post__content, /* Classe specifica per il contenuto dei post, se presente nel tuo tema */
+.page__content, /* Classe specifica per il contenuto delle pagine, se presente nel tuo tema */
+article .entry-content /* Alternativa generica per il contenuto degli articoli */ {
+    font-family: 'Merriweather', Georgia, serif !important;
+}
+
+/* Manteniamo Inter per elementi specifici anche all'interno del contenuto principale */
+.content h1, .content h2, .content h3, .content h4, .content h5, .content h6,
+.post__content h1, .post__content h2, .post__content h3, .post__content h4, .post__content h5, .post__content h6,
+.page__content h1, .page__content h2, .page__content h3, .page__content h4, .page__content h5, .page__content h6,
+article .entry-content h1, article .entry-content h2, article .entry-content h3,
+article .entry-content h4, article .entry-content h5, article .entry-content h6 {
+    font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif !important;
+}
