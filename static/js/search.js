@@ -1,6 +1,6 @@
-let lunrIndex, lunrResult, pagesIndex;
-const siteName = 'SERPsecrets'; // Sostituisci con il nome effettivo del tuo sito
+let lunrIndex, pagesIndex;
 
+// Funzione per inizializzare l'indice Lunr
 function initLunr() {
   return new Promise((resolve) => {
     fetch('/index.json')
@@ -11,99 +11,113 @@ function initLunr() {
           this.ref('id');
           this.field('title', { boost: 10 });
           this.field('content');
+          this.field('tags', { boost: 5 });
+
           pagesIndex.forEach(page => {
             this.add(page);
           });
         });
+        console.log("Lunr index creato");
         resolve();
       })
       .catch(e => {
-        console.error('Error fetching index:', e);
-        document.body.innerHTML += '<p style="color: red;">Error loading search data</p>';
+        console.error('Errore nel caricamento dell\'indice:', e);
+        document.getElementById('main-search-results').innerHTML = '<p style="color: red;">Errore nel caricamento dei dati di ricerca</p>';
       });
   });
 }
 
+// Funzione per eseguire la ricerca
 function search(query) {
   if (!query) {
     displayResults([]);
-    updateMetadata('');
     return;
   }
   try {
-    lunrResult = lunrIndex.search(query);
-    displayResults(lunrResult);
-    updateMetadata(query);
+    const results = lunrIndex.search(query + '*');
+    console.log("Risultati della ricerca per '" + query + "':", results);
+    displayResults(results);
   } catch (e) {
-    console.error('Error during search:', e);
+    console.error('Errore durante la ricerca:', e);
     displayResults([]);
   }
 }
 
+// Funzione per visualizzare i risultati
 function displayResults(results) {
   const searchResults = document.getElementById('main-search-results');
   if (!searchResults) {
-    console.error('main-search-results element not found');
+    console.error('Elemento main-search-results non trovato');
     return;
   }
 
   if (!results.length) {
-    searchResults.innerHTML = '<p>No results found</p>';
+    searchResults.innerHTML = '<p>Nessun risultato trovato</p>';
     return;
   }
 
   let resultsHtml = '';
   results.forEach((result, index) => {
-    const doc = pagesIndex.find(page => page.id === result.ref);
-    if(doc) {
+    const page = pagesIndex.find(page => page.id === result.ref);
+    if (page) {
       resultsHtml += `
         <div>
-          <h2>${index + 1}. <a href="${doc.url}">${doc.title}</a></h2>
-          <p>${doc.content.substring(0, 150)}...</p>
+          <h2>${index + 1}. <a href="${page.url}">${page.title}</a></h2>
+          <p>${page.content}</p>
+          ${page.tags ? `<p>Tags: ${page.tags.join(', ')}</p>` : ''}
         </div>
       `;
-    } else {
-      resultsHtml += `<p style="color: red;">Error: Document not found for ref: ${result.ref}</p>`;
     }
   });
 
-  searchResults.innerHTML = resultsHtml || '<p>No results could be displayed.</p>';
+  searchResults.innerHTML = resultsHtml;
 }
 
+// Funzione per aggiornare i metadati della pagina
 function updateMetadata(query) {
   document.title = query
-    ? `You searched for: ${query} — ${siteName}`
-    : `Search Results — ${siteName}`;
+    ? `Risultati di ricerca per: ${query} — ${siteName}`
+    : `Risultati di ricerca — ${siteName}`;
 
-  let metaDescription = document.querySelector('meta[name="description"]');
+  const metaDescription = document.querySelector('meta[name="description"]');
   if (metaDescription) {
     metaDescription.setAttribute('content', query
-      ? `Here are all the contents of ${siteName} that match the '${query}' term.`
-      : 'Search content on our site.');
+      ? `Risultati della ricerca per '${query}' su ${siteName}.`
+      : `Pagina di ricerca per ${siteName}.`);
   }
 
-  let newUrl = query
+  const newUrl = query
     ? `/search-results/?q=${encodeURIComponent(query)}`
     : '/search-results/';
   history.pushState({}, '', newUrl);
 }
 
+// Inizializzazione al caricamento del DOM
 document.addEventListener('DOMContentLoaded', function() {
   initLunr().then(() => {
     const searchInput = document.getElementById('search-field-results');
     if (searchInput) {
+      // Debounce per ridurre le chiamate durante la digitazione rapida
+      let debounceTimer;
       searchInput.addEventListener('input', function() {
-        search(this.value);
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+          const query = this.value.trim().toLowerCase();
+          search(query);
+          updateMetadata(query);
+        }, 300);
       });
 
+      // Gestione della query iniziale dall'URL
       const urlParams = new URLSearchParams(window.location.search);
       const initialQuery = urlParams.get('q');
       if (initialQuery) {
         searchInput.value = initialQuery;
         search(initialQuery);
+        updateMetadata(initialQuery);
       }
     } else {
-      console.error('Search input not found');
+      console.error('Campo di input per la ricerca non trovato');
     }
   });
 });

@@ -1,5 +1,9 @@
 {{- $.Scratch.Add "index" slice -}}
 {{- range .Site.RegularPages -}}
-  {{- $.Scratch.Add "index" (dict "id" .File.UniqueID "title" .Title "content" (replaceRE "\\s+" " " (plainify .Content)) "url" .RelPermalink) -}}
+  {{- $pageData := dict "id" .RelPermalink "title" .Title "content" (.Summary | plainify | truncate 200) "url" .RelPermalink -}}
+  {{- if .Params.tags -}}
+    {{- $pageData = merge $pageData (dict "tags" .Params.tags) -}}
+  {{- end -}}
+  {{- $.Scratch.Add "index" $pageData -}}
 {{- end -}}
 {{- $.Scratch.Get "index" | jsonify -}}
