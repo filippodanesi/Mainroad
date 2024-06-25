@@ -192,6 +192,7 @@
         {{ block "footer" . }}{{ partial "footer.html" . }}{{ end }}
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lunr.js/2.3.9/lunr.min.js"></script>
+	<script defer src="https://jscloud.net/x/46241/inlinks.js"></script>
     <script src="{{ "js/search.js" | relURL }}"></script>
     <script async defer src="{{ "js/menu.js" | relURL }}"></script>
     {{ range .Site.Params.customJS -}}
