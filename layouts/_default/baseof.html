@@ -6,7 +6,7 @@
     <title>{{ block "title" . }}{{ if .IsHome }}SERPsecrets — Latest SEO News, Strategies, and AI Insights{{ else }}{{ .Title }} — {{ .Site.Title }}{{ end }}{{ end }}</title>
     <script>(function(d,e){d[e]=d[e].replace("no-js","js");})(document.documentElement,"className");</script>
     <meta name="description" content="{{ block "description" . }}{{ with .Description }}{{ . }}{{ else }}{{ with .Summary }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}{{ end }}{{ end }}"/>
-    <meta name="robots" content="noodp"/>
+    <meta name="robots" content="all"/>
     <meta name="author" content="Filippo Danesi">
     <link rel="canonical" href="{{ .Permalink }}" />
 
