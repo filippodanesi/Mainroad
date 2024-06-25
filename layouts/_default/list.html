@@ -1,22 +1,61 @@
+{{ define "description" }}
+    {{ if in .RelPermalink "/categories/" }}
+        {{ $categorySlug := index (last 1 (split (trim .RelPermalink "/") "/")) 0 }}
+        {{ index .Site.Params.categoryDescriptions $categorySlug | default .Site.Params.description }}
+    {{ else }}
+        {{ .Site.Params.description }}
+    {{ end }}
+{{ end }}
+
 {{ define "main" }}
-<main class="main list" role="main">
-	{{- with .Title }}
-	<header class="main__header">
-		<h1 class="main__title">{{ . }}</h1>
-	</header>
-	{{- end }}
-	{{- with .Content }}
-	<div class="content main__content clearfix">
-		{{ . }}
-	</div>
-	{{- end }}
-	{{- range .Paginator.Pages }}
-		{{- .Render "summary" }}
-	{{- end }}
-</main>
-{{ partial "pagination.html" . }}
+    {{ $isCategoryPage := in .RelPermalink "/categories/" }}
+    {{ $categoryDescription := .Site.Params.description }}
+
+    {{ if $isCategoryPage }}
+        {{ $categorySlug := index (last 1 (split (trim .RelPermalink "/") "/")) 0 }}
+        {{ $categoryDescription = index .Site.Params.categoryDescriptions $categorySlug | default .Site.Params.description }}
+    {{ end }}
+
+    <main class="main list" role="main">
+        {{- with .Title }}
+        <header class="main__header">
+            <h1 class="main__title">{{ . }}</h1>
+        </header>
+        {{- end }}
+
+        {{ if $isCategoryPage }}
+            <div class="content main__content clearfix">
+                <p>{{ $categoryDescription }}</p>
+            </div>
+        {{ else }}
+            {{- with .Content }}
+            <div class="content main__content clearfix">
+                {{ . }}
+            </div>
+            {{- end }}
+        {{ end }}
+
+        {{- range .Paginator.Pages }}
+            {{- .Render "summary" }}
+        {{- end }}
+    </main>
+    {{ partial "pagination.html" . }}
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "@id": "{{ .Permalink }}#webpage",
+        "url": "{{ .Permalink }}",
+        "name": "{{ .Title }}",
+        "isPartOf": {
+            "@id": "{{ .Site.BaseURL }}#website"
+        },
+        "description": "{{ $categoryDescription }}"
+    }
+    </script>
 {{ end }}
 
 {{ define "footer" }}
-{{ partial "footer.html" . }}
+    {{ partial "footer.html" . }}
 {{ end }}
