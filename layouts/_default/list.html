@@ -19,40 +19,4 @@
 
 {{ define "footer" }}
 {{ partial "footer.html" . }}
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "{{ if eq .Kind "taxonomy" }}CollectionPage{{ else }}WebPage{{ end }}",
-      "@id": "{{ .Permalink }}",
-      "url": "{{ .Permalink }}",
-      "name": "{{ .Title }}",
-      "isPartOf": {
-        "@id": "{{ .Site.BaseURL }}#website"
-      },
-      "description": "{{ with .Description }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}"
-    },
-    {
-      "@type": "ItemList",
-      "itemListElement": [
-        {{ range $index, $element := .Paginator.Pages }}
-        {
-          "@type": "ListItem",
-          "position": {{ add $index 1 }},
-          "url": "{{ .Permalink }}",
-          "name": "{{ .Title }}"
-          {{- with .Description -}}
-          ,"description": "{{ . }}"
-          {{- end -}}
-          {{- with .Params.image -}}
-          ,"image": "{{ . | absURL }}"
-          {{- end -}}
-        }{{ if ne (add $index 1) (len $.Paginator.Pages) }},{{ end }}
-        {{ end }}
-      ]
-    }
-  ]
-}
-</script>
 {{ end }}
